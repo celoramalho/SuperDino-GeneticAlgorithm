@@ -1,4 +1,4 @@
-from OpenDinoGame.open_dino_game import DinoGame
+from OpenDinoGame.DinoGame import DinoGame
 
 # Usar a classe
 # Example usage
