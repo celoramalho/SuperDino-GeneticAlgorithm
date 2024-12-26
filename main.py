@@ -17,13 +17,16 @@ if __name__ == "__main__":
         
         game.screen_capture()
         
-        elapsed_time = time.time() - t0
-        average_fps = (n_frames / elapsed_time)
-        dinogui.refresh_gui(average_fps)
-        n_frames += 1
         
         key = cv.waitKey(1) #Tá crashando ao apertar q
         if key == ord('q'):
             game.close()
             break
+        
+        elapsed_time = time.time() - t0
+        average_fps = (n_frames / elapsed_time)
+        dinogui.refresh_gui(average_fps)
+        n_frames += 1
+        
+        
         #game.keep_open()  # Keep the browser open is crashing esse trem

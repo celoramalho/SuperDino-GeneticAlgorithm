@@ -15,7 +15,7 @@ class DinoTerminalGui:
         self.refresh_gui(0)
   
     def clear_terminal(self):
-        os.system(os.system('cls' if os.name == 'nt' else 'clear'))
+        os.system('cls' if os.name == 'nt' else 'clear')
     
     def show_fps(self, average_fps):
         if average_fps < 10: #Check critical fps value
