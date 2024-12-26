@@ -24,15 +24,10 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
             screenshot = sct.grab(region)
             return np.array(screenshot) # Convert to NumPy array
 
-    def start_screen_capture(self):
-        while True:
-            region = self.get_chrome_window_region() # Define this here inside the loop? Se a pessoa mudar a dimensão da janela
-            img = self.capture_chrome_window(region)
-            gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #BGR2 # Convert RGB to BGR color
-            #already BGR img?
-            small = cv.resize(gray_img, (0, 0), fx=0.5, fy=0.5)
-            cv.imshow("Computer Vision", small)
-            
-            key = cv.waitKey(1) #Tá crashando ao apertar q
-            if key == ord('q'):
-                break
+    def screen_capture(self):
+        region = self.get_chrome_window_region() # Define this here inside the loop? Se a pessoa mudar a dimensão da janela
+        img = self.capture_chrome_window(region)
+        gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #BGR2 # Convert RGB to BGR color
+        #already BGR img?
+        small = cv.resize(gray_img, (0, 0), fx=0.5, fy=0.5)
+        cv.imshow("Computer Vision", small)
