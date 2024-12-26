@@ -1,6 +1,6 @@
-"""import mss
+import mss
 import pygetwindow as gw
-
+#https://www.youtube.com/watch?v=SWgQNWf1ICA&t=91s
 
 def get_chrome_window():
     # Localiza a janela do Chrome pelo título
@@ -13,4 +13,3 @@ with mss.mss() as sct:
     monitor = {"top": 100, "left": 100, "width": 800, "height": 600}
     screenshot = sct.grab(monitor)
     img = np.array(screenshot)
-"""
