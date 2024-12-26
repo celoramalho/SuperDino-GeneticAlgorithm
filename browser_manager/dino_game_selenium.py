@@ -4,7 +4,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import WebDriverException
 
-class DinoGame:
+class DinoGameSelenium:
     def __init__(self):
         self.driver = self._initialize_chrome()
 

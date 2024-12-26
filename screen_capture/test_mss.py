@@ -1,5 +1,5 @@
 import mss
-from PIL import Image, ImageGrab
+#from PIL import Image, ImageGrab
 import pyautogui
 
 import cv2 as cv
@@ -7,7 +7,7 @@ import numpy as np
 import time
 
 w, h = pyautogui.size()
-print("PIL Screen Capture Speed Test")
+print("MSS Screen Capture Speed Test")
 print("Screen Resolution: " + str(w) + 'x' + str(h))
 
 img = None
