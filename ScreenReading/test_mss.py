@@ -16,7 +16,7 @@ n_frames = 1
 monitor = {"top": 0, "left": 0, "width": w, "height": h}
 with mss.mss() as sct:
     while True:
-        img = sct.grab(monitor=monitor)
+        img = sct.grab(monitor)
         img = np.array(img)                         # Convert to NumPy array
         # img = cv.cvtColor(img, cv.COLOR_RGB2BGR)  # Convert RGB to BGR color
         
