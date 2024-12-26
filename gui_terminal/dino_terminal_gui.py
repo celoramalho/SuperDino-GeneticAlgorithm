@@ -36,10 +36,13 @@ class DinoTerminalGui:
     def print_dino_speed(self, dino_speed=0):
         print(f"Dino Speed: {dino_speed}")
     
-    def refresh_gui(self, average_fps=0):
+    def refresh(self, average_fps=0):
         self.clear_terminal()
         self.show_fps(average_fps)
         self.print_obstacle_distance()
         self.print_obstacle_lenght()
         self.print_dino_speed()
+    
+    def finish(self):
+        self.clear_terminal(self)
         

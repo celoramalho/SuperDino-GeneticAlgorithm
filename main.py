@@ -20,12 +20,13 @@ if __name__ == "__main__":
         
         key = cv.waitKey(1) #Tá crashando ao apertar q
         if key == ord('q'):
+            dinogui.finish()
             game.close()
             break
         
         elapsed_time = time.time() - t0
         average_fps = (n_frames / elapsed_time)
-        dinogui.refresh_gui(average_fps)
+        dinogui.refresh(average_fps)
         n_frames += 1
         
         
