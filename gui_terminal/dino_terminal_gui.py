@@ -12,7 +12,7 @@ class DinoTerminalGui:
     
     def __init__(self, config):
         self.config = config
-        self.refresh_gui(0)
+        self.refresh(0)
   
     def clear_terminal(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -44,5 +44,5 @@ class DinoTerminalGui:
         self.print_dino_speed()
     
     def finish(self):
-        self.clear_terminal(self)
+        self.clear_terminal()
         
