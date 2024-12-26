@@ -15,7 +15,7 @@ if __name__ == "__main__":
     
     while True:
         
-        game.screen_capture()
+        screenshot = game.screen_capture()
         
         
         key = cv.waitKey(1) #Tá crashando ao apertar q

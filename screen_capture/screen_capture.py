@@ -3,6 +3,7 @@ from browser_manager.dino_game_selenium import DinoGameSelenium
 #from PIL import Image, ImageGrab
 #import pyautogui
 
+import json
 import cv2 as cv
 import numpy as np
 import time
@@ -29,5 +30,13 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
         img = self.capture_chrome_window(region)
         gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #BGR2 # Convert RGB to BGR color
         #already BGR img?
-        small = cv.resize(gray_img, (0, 0), fx=0.5, fy=0.5)
-        cv.imshow("Computer Vision", small)
+        gray_img_resized = cv.resize(gray_img, (0, 0), fx=0.5, fy=0.5)
+        
+        #Testando e vendo a saida
+        #numpy_to_list = small.tolist()
+        #with open ('numpy_array_test.json', 'w') as file:
+        #    json.dump(numpy_to_list, file)
+
+        #print(f"NumPy Array Lenght: {small.shape}")
+        cv.imshow("Computer Vision", gray_img_resized)
+        return gray_img_resized
