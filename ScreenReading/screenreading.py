@@ -1,4 +1,4 @@
-"""import mss
+import mss
 import pygetwindow as gw
 
 
@@ -13,4 +13,3 @@ with mss.mss() as sct:
     monitor = {"top": 100, "left": 100, "width": 800, "height": 600}
     screenshot = sct.grab(monitor)
     img = np.array(screenshot)
-"""
