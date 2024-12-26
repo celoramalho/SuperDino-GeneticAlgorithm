@@ -1,8 +1,8 @@
 import numpy as np
 import cv2 as cv
+from .convolution_kernel import ConvolutionKernel
 
-
-class Screenshot:
+class Screenshot(ConvolutionKernel):
     def __init__(self, screenshot_array):
         self.screenshot_array = screenshot_array
         self.pixels_ocurrences = None

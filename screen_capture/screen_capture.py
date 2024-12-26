@@ -30,7 +30,7 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
         img = self.capture_chrome_window(region)
         gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY) #BGR2 # Convert RGB to BGR color; try black and white
         #already BGR img?
-        gray_img_resized = cv.resize(gray_img, (0, 0), fx=0.3, fy=0.3)#fx=0.5, fy=0.5)
+        gray_img_resized = cv.resize(gray_img, (0, 0), fx=0.5, fy=0.5)#fx=0.5, fy=0.5)
         
         #Testando e vendo a saida
         #numpy_to_list = small.tolist()
