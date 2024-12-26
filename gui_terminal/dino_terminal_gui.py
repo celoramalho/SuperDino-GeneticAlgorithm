@@ -15,7 +15,7 @@ class DinoTerminalGui:
         self.refresh_gui(0)
   
     def clear_terminal(self):
-        os.system('cls' if os.name == 'nt' else clear)
+        os.system(os.system('cls' if os.name == 'nt' else 'clear'))
     
     def show_fps(self, average_fps):
         if average_fps < 10: #Check critical fps value
@@ -27,7 +27,19 @@ class DinoTerminalGui:
                  
         print(f"{fps_color}Average FPS: {average_fps}{self.text_colors["RESET"]}")
     
-    def refresh_gui(self, average_fps):
+    def print_obstacle_distance(self, obstacle_distance=0):
+        print(f"Obstacle Distance: {obstacle_distance}")
+        
+    def print_obstacle_lenght(self, obstacle_lenght=0):
+        print(f"Obstacle Lenght: {obstacle_lenght}")
+    
+    def print_dino_speed(self, dino_speed=0):
+        print(f"Dino Speed: {dino_speed}")
+    
+    def refresh_gui(self, average_fps=0):
         self.clear_terminal()
         self.show_fps(average_fps)
+        self.print_obstacle_distance()
+        self.print_obstacle_lenght()
+        self.print_dino_speed()
         
