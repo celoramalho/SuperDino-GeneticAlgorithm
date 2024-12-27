@@ -15,26 +15,37 @@ class Screenshot(ConvolutionKernel):
         self.screenshot_array = self.convolution_kernel.apply_convolution(self.screenshot_array)
         elements = self.locate_elements()
 
+        self.screenshot_array = cv.cvtColor(self.screenshot_array, cv.COLOR_GRAY2BGR)
         if elements["dino"]:
             for dino in elements["dino"]:
                 x, y, w, h = dino
                 print(f"Dino found at: x={x}, y={y}, width={w}, height={h}")
-                self.screenshot_array = cv.cvtColor(self.screenshot_array, cv.COLOR_GRAY2BGR)
                 # Draw a rectangle around the Dino
                 cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        else:
-            print("Dino not found!")
+        if elements["cactus"]:
+            for cactus in elements["cactus"]:
+                x, y, w, h = cactus
+                print(f"Cactus found at: x={x}, y={y}, width={w}, height={h}")
+                # Draw a rectangle around the Cactus
+                cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        if elements["fcking_prehistoric_birds"]:
+            for fcking_prehistoric_birds in elements["fcking_prehistoric_birds"]:
+                x, y, w, h = fcking_prehistoric_birds
+                print(f"Fcking Prehistoric Birds found at: x={x}, y={y}, width={w}, height={h}")
+                # Draw a rectangle around the Fcking Prehistoric Birds
+                cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 0, 192), 2)
 
     def show_screenshot(self):
         cv.imshow("Computer Vision", self.screenshot_array)
     
     def find_contours(self):
-        contours, _ = cv.findContours(self.screenshot_array, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        return contours
+        contours, hierarchy = cv.findContours(self.screenshot_array, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        return contours, hierarchy
     
     def locate_elements(self):
-        contours = self.find_contours()
+        contours, hierarchy = self.find_contours()
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None}
+        all_elements = []
 
         cactus = []
         dinos = []
@@ -42,7 +53,8 @@ class Screenshot(ConvolutionKernel):
 
         for contour in contours:
             x, y, w, h = cv.boundingRect(contour)
-            #elements.append((x, y, w, h))
+            cv.rectangle(self.screenshot_array, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
             aspect_ratio = w / float(h)
             if self.identify_dino(aspect_ratio, h, w):
                 dinos.append([x, y, w, h])
