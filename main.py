@@ -33,7 +33,7 @@ if __name__ == "__main__":
         average_fps = (n_frames / elapsed_time)
         dinogui.refresh(average_fps)
         print(f"NumPy Array Shape(Height, Width): {screenshot_array.screenshot_array.shape}") #screenshot_array.screenshot_array.shape)
-        print(f"Background Color: {screenshot_array.background_color}")
+        #print(f"Background Color: {screenshot_array.background_color}")
         #screenshot_array.print_pixels_ocurrences()
         n_frames += 1
 

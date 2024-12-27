@@ -16,7 +16,8 @@ class Screenshot(ConvolutionKernel):
         elements = self.locate_elements()
 
         if elements["dino"]:
-            for dino in dinos:
+            for dino in elements["dino"]:
+                x, y, w, h = dino
                 print(f"Dino found at: x={x}, y={y}, width={w}, height={h}")
                 self.screenshot_array = cv.cvtColor(self.screenshot_array, cv.COLOR_GRAY2BGR)
                 # Draw a rectangle around the Dino
@@ -33,7 +34,7 @@ class Screenshot(ConvolutionKernel):
     
     def locate_elements(self):
         contours = self.find_contours()
-        elements = {"dino": None; "cactus": None; "fcking_prehistoric_birds": None}
+        elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None}
 
         cactus = []
         dinos = []
@@ -43,9 +44,12 @@ class Screenshot(ConvolutionKernel):
             x, y, w, h = cv.boundingRect(contour)
             #elements.append((x, y, w, h))
             aspect_ratio = w / float(h)
-            dinos.append(x, y, w, h) if self.identify_dino(aspect_ratio, h, w)     
-            cactus.append(x, y, w, h) if self.identify_cactus(aspect_ratio, h, w)
-            fcking_prehistoric_birds.append(x, y, w, h) if self.identify_fcking_prehistoric_birds(aspect_ratio, h, w)
+            if self.identify_dino(aspect_ratio, h, w):
+                dinos.append([x, y, w, h])
+            elif self.identify_cactus(aspect_ratio, h, w):
+                cactus.append([x, y, w, h])
+            elif self.identify_fcking_prehistoric_birds(aspect_ratio, h, w):
+                fcking_prehistoric_birds.append([x, y, w, h])
 
         elements["dino"] = dinos
         elements["cactus"] = cactus
