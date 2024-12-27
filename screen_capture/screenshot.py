@@ -3,14 +3,18 @@ import cv2 as cv
 from .convolution_kernel import ConvolutionKernel
 
 class Screenshot(ConvolutionKernel):
-    def __init__(self, screenshot_array):
+    def __init__(self, screenshot_array, kernel):
         self.screenshot_array = screenshot_array
         self.pixels_ocurrences = None
         self.background_color = None
+        self.convolution_kernel = ConvolutionKernel(kernel)
+        self.eightbit_array = None
+        self.dino_coords = None
 
     def process(self):
         self.background_color = self.find_common_color()
-        pass
+        self.screenshot_array = self.convolution_kernel.apply_convolution(self.screenshot_array)
+        self.dino_coords = self.identify_dino()              
 
     #def find_common_color(screenshot_array):
 
@@ -37,10 +41,33 @@ class Screenshot(ConvolutionKernel):
         cv.imshow("Computer Vision", self.screenshot_array)
         
 
-    def locate_dino_game(self): #bidimensional (2D)
+    def identify_dino(self): #bidimensional (2D)
         
-        pixels_ocurrences = self.find_pixels_ocurrences(self.screenshot_array)
-        background_color = np.equal(self.screenshot_array, [0, 0, 0])
+        contours, _ = cv.findContours(self.screenshot_array, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)   
+        
+        dino_contour = None
+        for contour in contours:
+            x, y, w, h = cv.boundingRect(contour)
+            aspect_ratio = w / float(h)
+
+            # Filter based on size and aspect ratio (adjust values for your game)
+            if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
+                dino_contour = (x, y, w, h)
+                break
+
+        dino_coords = dino_contour # identify_dino()
+        if dino_coords:
+            x, y, w, h = dino_coords 
+            
+            print(f"Dino found at: x={x}, y={y}, width={w}, height={h}")
+            
+            self.screenshot_array = cv.cvtColor(self.screenshot_array, cv.COLOR_GRAY2BGR)
+            # Draw a rectangle around the Dino
+            cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            
+        else:
+            print("Dino not found!")
+            
 
         #maped_pixels = []        
 
