@@ -21,9 +21,9 @@ class DinoTerminalGui:
         if average_fps < 10: #Check critical fps value
             fps_color = self.text_colors["RED"] 
         elif average_fps >= 10 and average_fps < 19:
-            fps_color = self.text_colors["YELLOW"] 
+            fps_color = self.text_colors["YELLOW"]
         else:
-            fps_color = self.text_colors["GREEN"] 
+            fps_color = self.text_colors["GREEN"]
                  
         print(f"{fps_color}Average FPS: {average_fps}{self.text_colors["RESET"]}")
     

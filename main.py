@@ -1,7 +1,7 @@
 from screen_capture.screen_capture import DinoGameWithScreenCapture
 from screen_capture.screenshot import Screenshot
 from gui_terminal.dino_terminal_gui import DinoTerminalGui
-
+from screen_capture.convolution_kernel import ConvolutionKernel
 
 import cv2 as cv
 import time
@@ -10,6 +10,8 @@ import time
 
 t0 = time.time()
 n_frames = 1
+kernel = "Laplacian" # Laplacian, Prewitt X, Prewitt Y, Emboss, Kirsch Compass, Sobel X, Sobel Y
+
 
 dinogui = DinoTerminalGui(13)
 if __name__ == "__main__":
@@ -18,22 +20,20 @@ if __name__ == "__main__":
     
     while True:
         
-        screenshot_array = Screenshot(game.screen_capture()) # NumPy array
-        screenshot_array.show_screenshot()
+        screenshot_array = Screenshot(game.screen_capture(), kernel) # NumPy array
         screenshot_array.process()
+        screenshot_array.show_screenshot()
         
-        
-        key = cv.waitKey(1) #Tá crashando ao apertar q
+        key = cv.waitKey(1)
         if key == ord('q'):
-            dinogui.finish()
-            game.close()
+            print("Exiting...")
             break
         
         elapsed_time = time.time() - t0
         average_fps = (n_frames / elapsed_time)
         dinogui.refresh(average_fps)
         print(f"NumPy Array Shape(Height, Width): {screenshot_array.screenshot_array.shape}") #screenshot_array.screenshot_array.shape)
-        print(f"Background Color: {screenshot_array.background_color}")
+        #print(f"Background Color: {screenshot_array.background_color}")
         #screenshot_array.print_pixels_ocurrences()
         n_frames += 1
 
