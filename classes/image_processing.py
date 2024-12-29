@@ -24,11 +24,9 @@ class ImageProcessing():
         sharp_img = self.apply_convolution(gray_img)
         resized_img = self.resize_image(sharp_img)
         binary_img = self.threshold_image(resized_img)
-            
+        
         elements = self.detect_elements(binary_img)
 
-        print(f"Shape in cv_img: {self.cv_image.shape}")
-        
         objects_detecteds_image = self.draw_detected_objects(self.cv_image, elements)
         original_image = self.resize_image(self.cv_image)
         return original_image, objects_detecteds_image, binary_img
@@ -76,18 +74,18 @@ class ImageProcessing():
         return cv.cvtColor(cv_image, cv.COLOR_GRAY2BGR)
     
     def find_contours(self, cv_image):
-        contours, hierarchy = cv.findContours(cv_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv.findContours(cv_image, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
         return contours, hierarchy
     
-    def detect_elements(self, cv_image):
-        contours, hierarchy = self.find_contours(cv_image)
+    def detect_elements(self, image):
+        contours, hierarchy = self.find_contours(image)
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None,"unknown": None}
 
         cactus = []
         dinos = []
         fcking_prehistoric_birds = []
         unknown = []
-        print(f"Shape in detect_elements method: {cv_image.shape}")
+        #print(f"Shape in detect_elements method: {cv_image.shape}")
         
         
         for contour in contours:
@@ -102,17 +100,17 @@ class ImageProcessing():
                         break
                 if is_new:
                     dinos.append([x, y, w, h])
-                    cv.drawContours(self.cv_image, contour, 0, (0, 90, 0), 2)
+                    #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
                     
             elif self.detect_cactus(aspect_ratio, h, w):
                 cactus.append([x, y, w, h])
-                cv.drawContours(self.cv_image, contour, 0, (90, 0, 0), 2)
+                #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
             elif self.detect_fcking_prehistoric_birds(aspect_ratio, h, w):
                 fcking_prehistoric_birds.append([x, y, w, h])
-                cv.drawContours(self.cv_image, contour, 0, (0, 90, 90), 2)
+                #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
             else:
                 unknown.append([x, y, w, h])
-                #cv.drawContours(self.cv_image, contour, 0, (255, 255, 0), 2)
+                #cv.drawContours(self.computer_img, contour, 0, (255, 255, 0), 4)
 
         elements["dino"] = dinos
         elements["cactus"] = cactus
