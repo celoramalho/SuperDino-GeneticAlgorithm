@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
+from classes.object_detected import ObjectDetected
 
 class ImageProcessing():
         
@@ -19,17 +20,14 @@ class ImageProcessing():
         self.kernel = self.kernels['Laplacian']
 
     def process(self):
-        blurred_img = self.blur_image(self.cv_image)
-        gray_img = self.convert_to_gray(blurred_img)
-        sharp_img = self.apply_convolution(gray_img)
-        resized_img = self.resize_image(sharp_img)
-        binary_img = self.threshold_image(resized_img)
+        computer_vision_img = self.computer_vision_image(self.cv_image)
         
-        elements = self.detect_elements(binary_img)
+        elements = self.detect_elements(computer_vision_img)
 
-        objects_detecteds_image = self.draw_detected_objects(self.cv_image, elements)
         original_image = self.resize_image(self.cv_image)
-        return original_image, objects_detecteds_image, binary_img
+        objects_detecteds_image = self.draw_detected_objects(original_image, elements)
+        #print(type(objects_detecteds_image))
+        return original_image, objects_detecteds_image, computer_vision_img
     
     def draw_detected_objects(self, img, elements):
         img = self.draw_and_log_elements(img, elements["dino"], "Dino", (0, 255, 0))  # Green
@@ -37,6 +35,16 @@ class ImageProcessing():
         img = self.draw_and_log_elements(img, elements["fcking_prehistoric_birds"], "Fcking Prehistoric Birds", (0, 0, 192))
         return img# Dark Red
     
+    def computer_vision_image(self, cv_image, resize=True):
+        blurred_img = self.blur_image(cv_image)
+        gray_img = self.convert_to_gray(blurred_img)
+        sharp_img = self.apply_convolution(gray_img)
+        if resize:
+            sharp_img = self.resize_image(sharp_img)
+        binary_img = self.threshold_image(sharp_img)
+        
+        return binary_img
+        
     def draw_and_log_elements(self, img, elements, label, color):
         font = cv.FONT_HERSHEY_SIMPLEX
         font_scale = 0.3
@@ -48,6 +56,7 @@ class ImageProcessing():
                 cv.putText(img, label, (x, y - 10), font, font_scale, color, thickness)
                 print(f"{label} found at: x={x}, y={y}, width={w}, height={h}")
                 cv.rectangle(img, (x, y), (x+w, y+h), color, 2)
+        return img
         
     def apply_convolution(self, cv_image):
         filtered_image = cv.filter2D(cv_image, -1, self.kernel)
@@ -78,6 +87,8 @@ class ImageProcessing():
         return contours, hierarchy
     
     def detect_elements(self, image):
+        
+        
         contours, hierarchy = self.find_contours(image)
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None,"unknown": None}
 
@@ -90,23 +101,26 @@ class ImageProcessing():
         
         for contour in contours:
             x, y, w, h = cv.boundingRect(contour)
-
-            aspect_ratio = w / float(h)
-            if self.detect_dino(aspect_ratio, h, w):
+            
+            object_detected = ObjectDetected(x, y, w, h, "Unknown")
+            
+                
+            
+            if object_detected.is_dino():
                 is_new = True
                 for existing_dino in dinos:
-                    if self.is_duplicate(existing_dino, contour):
+                    if self.is_duplicate(existing_dino, object_detected):
                         is_new = False
                         break
                 if is_new:
-                    dinos.append([x, y, w, h])
+                    dinos.append(object_detected.dimensions())
                     #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
                     
-            elif self.detect_cactus(aspect_ratio, h, w):
-                cactus.append([x, y, w, h])
+            elif object_detected.is_cactus():
+                cactus.append(object_detected.dimensions())
                 #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
-            elif self.detect_fcking_prehistoric_birds(aspect_ratio, h, w):
-                fcking_prehistoric_birds.append([x, y, w, h])
+            elif object_detected.is_fcking_prehistoric_birds():
+                fcking_prehistoric_birds.append(object_detected.dimensions())
                 #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
             else:
                 unknown.append([x, y, w, h])
@@ -120,25 +134,44 @@ class ImageProcessing():
     
     def is_duplicate(self, existing_object, new_object, threshold=10):
         ex, ey, ew, eh = existing_object
-        x, y, w, h = cv.boundingRect(new_object)
+        x, y, w, h = new_object.dimensions()
         if abs(x - ex) < threshold and abs(y - ey) < threshold:
             return True
         else:
-            return False
-    def detect_dino(self, aspect_ratio, h, w): #bidimensional (2D)        
-        if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
-            return True
-        else:
-            return False
-    
-    def detect_cactus(self, aspect_ratio, h, w): #bidimensional (2D)
-        if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
-            return True
-        else:
-            return False
-    
-    def detect_fcking_prehistoric_birds(self, aspect_ratio, h, w): #bidimensional (2D)
-        if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
-            return True
-        else:
-            return False
+            return False        
+        
+    def game_region(self):
+        computer_vision_image = self.computer_vision_image(self.cv_image, resize=False)
+        croped_image = self.cv_image
+        browser_bar = None
+        image_height, image_width = computer_vision_image.shape
+        
+        contours, hierarchy = self.find_contours(computer_vision_image)
+        for contour in contours:
+            x, y, w, h = cv.boundingRect(contour)
+            object_detected = ObjectDetected(x, y, w, h, "Unknown")
+            object_length = max(w, h)  # The longer side of the bounding box
+            
+            
+            if object_length >= image_width * 0.90:
+                browser_bar = ObjectDetected(x, y, w, h, "BrowserBar")
+            
+            elif  object_detected.is_dino():
+                print(f"Image Height: {image_height}")
+                print(f"Image Width: {image_width}")
+                print(f"Object Detected Height: {object_detected.height()}")
+                print(f"Object Detected Width: {object_detected.width()}")
+                print(f"browser_bardetected Y: {browser_bar.y}")
+                print(f"Dino Detected Y: {y}")
+                if browser_bar is not None:
+                    min_y = browser_bar.y
+                else:
+                    min_y = y - object_detected.height() * 2
+                    
+                max_y = object_detected.y + object_detected.height()*2
+                y_start = max(0, min_y)  # Extend upwards
+                y_end = min(image_height, max_y)  # Extend downwards
+                croped_image = self.cv_image[y_start:y_end, :]
+                return croped_image
+        
+        return croped_image

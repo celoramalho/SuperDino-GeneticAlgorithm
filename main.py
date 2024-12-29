@@ -23,7 +23,7 @@ if __name__ == "__main__":
         np_screenshot = Screenshot(game.screen_capture()) # NumPy array
         processed_np_img = np_screenshot.process_img()
         #print(type(processed_np_img))
-        processed_np_img.show('Computer_Vision')
+        processed_np_img.show('Objects_Detecteds')
         
         key = cv.waitKey(1)
         if key == ord('q'):
