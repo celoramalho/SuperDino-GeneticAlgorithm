@@ -1,6 +1,6 @@
 from classes.screen_capture import DinoGameWithScreenCapture
 from classes.screenshot import Screenshot
-from gui_terminal.dino_terminal_gui import DinoTerminalGui
+from classes.dino_terminal_gui import DinoTerminalGui
 
 
 import cv2 as cv

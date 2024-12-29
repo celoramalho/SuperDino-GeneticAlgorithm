@@ -26,11 +26,8 @@ class ImageProcessing():
         binary_img = self.threshold_image(resized_img)
         self.cv_image = self.resize_image(self.cv_image)
         
-        #self.background_color = self.detect_common_color()
         elements = self.detect_elements(binary_img)
 
-        
-        #print(f"Image type in process method ImageProcessing: {type(self.cv_image)}")
         print(f"Shape in cv_img: {self.cv_image.shape}")
         
         self.draw_and_log_elements(elements["dino"], "Dino", (0, 255, 0))  # Green
