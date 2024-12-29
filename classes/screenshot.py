@@ -1,43 +1,27 @@
 import numpy as np
 import cv2 as cv
-from .convolution_kernel import ConvolutionKernel
+from classes.image_processing import ImageProcessing
 
-class Screenshot(ConvolutionKernel):
-    def __init__(self, screenshot_array, kernel):
-        self.screenshot_array = screenshot_array
-        self.convolution_kernel = ConvolutionKernel(kernel)
+class Screenshot(ImageProcessing):
+    def __init__(self, image):
+        self.image = image
+        #print(f"Image type in init Screenshot: {type(self.image)}")
+        super().__init__(image)
         #self.pixels_ocurrences = None
         #self.eightbit_array = None
         #self.background_color = None
-
-    def process(self):
-        #self.background_color = self.detect_common_color()
-        self.screenshot_array = self.convolution_kernel.apply_convolution(self.screenshot_array)
-        elements = self.detect_elements()
-
-        self.screenshot_array = cv.cvtColor(self.screenshot_array, cv.COLOR_GRAY2BGR)
-        if elements["dino"]:
-            for dino in elements["dino"]:
-                x, y, w, h = dino
-                print(f"Dino found at: x={x}, y={y}, width={w}, height={h}")
-                # Draw a rectangle around the Dino
-                cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        if elements["cactus"]:
-            for cactus in elements["cactus"]:
-                x, y, w, h = cactus
-                print(f"Cactus found at: x={x}, y={y}, width={w}, height={h}")
-                # Draw a rectangle around the Cactus
-                cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 0, 255), 2)
-        if elements["fcking_prehistoric_birds"]:
-            for fcking_prehistoric_birds in elements["fcking_prehistoric_birds"]:
-                x, y, w, h = fcking_prehistoric_birds
-                print(f"Fcking Prehistoric Birds found at: x={x}, y={y}, width={w}, height={h}")
-                # Draw a rectangle around the Fcking Prehistoric Birds
-                cv.rectangle(self.screenshot_array, (x, y), (x+w, y+h), (0, 0, 192), 2)
-
-    def show_screenshot(self):
-        cv.imshow("Computer Vision", self.screenshot_array)
     
+    def process_img(self):
+        img_processed = self.process()
+        #print(f"Image type in process_img Screenshot: {type(img_processed)}")
+        return Screenshot(img_processed)
+        
+    def show(self):
+        #print(f"Image type in show Screenshot: {type(self.image)}")
+        resized_image = cv.resize(self.image, (0, 0), fx=0.5, fy=0.5)
+        cv.imshow("Computer Vision", resized_image)
+    
+    """
     def detect_contours(self):
         contours, hierarchy = cv.detectContours(self.screenshot_array, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         return contours, hierarchy
@@ -46,7 +30,7 @@ class Screenshot(ConvolutionKernel):
         contours, hierarchy = self.detect_contours()
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None}
         all_elements = []
-
+    
         cactus = []
         dinos = []
         fcking_prehistoric_birds = []
@@ -95,7 +79,7 @@ class Screenshot(ConvolutionKernel):
         #        else:
         #            maped_pixels.append({"pixel": pixel, "gray_value": color, "occurrences": 1})
 
-
+"""
     #def print_pixels_ocurrences(self):
     #    print("Gray levels occurrences:")
     #    for gray, count in self.pixels_ocurrences.items():

@@ -1,7 +1,7 @@
-from screen_capture.screen_capture import DinoGameWithScreenCapture
-from screen_capture.screenshot import Screenshot
+from classes.screen_capture import DinoGameWithScreenCapture
+from classes.screenshot import Screenshot
 from gui_terminal.dino_terminal_gui import DinoTerminalGui
-from screen_capture.convolution_kernel import ConvolutionKernel
+
 
 import cv2 as cv
 import time
@@ -20,9 +20,10 @@ if __name__ == "__main__":
     
     while True:
         
-        screenshot_array = Screenshot(game.screen_capture(), kernel) # NumPy array
-        screenshot_array.process()
-        screenshot_array.show_screenshot()
+        np_screenshot = Screenshot(game.screen_capture()) # NumPy array
+        processed_np_img = np_screenshot.process_img()
+        #print(type(processed_np_img))
+        processed_np_img.show()
         
         key = cv.waitKey(1)
         if key == ord('q'):
@@ -32,9 +33,6 @@ if __name__ == "__main__":
         elapsed_time = time.time() - t0
         average_fps = (n_frames / elapsed_time)
         dinogui.refresh(average_fps)
-        print(f"NumPy Array Shape(Height, Width): {screenshot_array.screenshot_array.shape}") #screenshot_array.screenshot_array.shape)
-        #print(f"Background Color: {screenshot_array.background_color}")
-        #screenshot_array.print_pixels_ocurrences()
         n_frames += 1
 
 
