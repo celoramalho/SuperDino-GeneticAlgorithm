@@ -11,9 +11,9 @@ class Screenshot(ConvolutionKernel):
         #self.background_color = None
 
     def process(self):
-        #self.background_color = self.find_common_color()
+        #self.background_color = self.detect_common_color()
         self.screenshot_array = self.convolution_kernel.apply_convolution(self.screenshot_array)
-        elements = self.locate_elements()
+        elements = self.detect_elements()
 
         self.screenshot_array = cv.cvtColor(self.screenshot_array, cv.COLOR_GRAY2BGR)
         if elements["dino"]:
@@ -38,12 +38,12 @@ class Screenshot(ConvolutionKernel):
     def show_screenshot(self):
         cv.imshow("Computer Vision", self.screenshot_array)
     
-    def find_contours(self):
-        contours, hierarchy = cv.findContours(self.screenshot_array, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    def detect_contours(self):
+        contours, hierarchy = cv.detectContours(self.screenshot_array, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         return contours, hierarchy
     
-    def locate_elements(self):
-        contours, hierarchy = self.find_contours()
+    def detect_elements(self):
+        contours, hierarchy = self.detect_contours()
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None}
         all_elements = []
 
@@ -56,11 +56,11 @@ class Screenshot(ConvolutionKernel):
             cv.rectangle(self.screenshot_array, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
             aspect_ratio = w / float(h)
-            if self.identify_dino(aspect_ratio, h, w):
+            if self.detect_dino(aspect_ratio, h, w):
                 dinos.append([x, y, w, h])
-            elif self.identify_cactus(aspect_ratio, h, w):
+            elif self.detect_cactus(aspect_ratio, h, w):
                 cactus.append([x, y, w, h])
-            elif self.identify_fcking_prehistoric_birds(aspect_ratio, h, w):
+            elif self.detect_fcking_prehistoric_birds(aspect_ratio, h, w):
                 fcking_prehistoric_birds.append([x, y, w, h])
 
         elements["dino"] = dinos
@@ -68,19 +68,19 @@ class Screenshot(ConvolutionKernel):
         elements["fcking_prehistoric_birds"] = fcking_prehistoric_birds
         return elements
     
-    def identify_dino(self, aspect_ratio, h, w): #bidimensional (2D)        
+    def detect_dino(self, aspect_ratio, h, w): #bidimensional (2D)        
         if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
             return True
         else:
             return False
     
-    def identify_cactus(self, aspect_ratio, h, w): #bidimensional (2D)
+    def detect_cactus(self, aspect_ratio, h, w): #bidimensional (2D)
         if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
             return True
         else:
             return False
     
-    def identify_fcking_prehistoric_birds(self, aspect_ratio, h, w): #bidimensional (2D)
+    def detect_fcking_prehistoric_birds(self, aspect_ratio, h, w): #bidimensional (2D)
         if 20 < w < 60 and 20 < h < 60 and 0.5 < aspect_ratio < 1.5:
             return True
         else:
@@ -102,9 +102,9 @@ class Screenshot(ConvolutionKernel):
     #        if count > 10:
     #            print(f"Gray value {gray}: {count} ocurrences")
 
-    #def find_common_color(screenshot_array):
+    #def detect_common_color(screenshot_array):
 
-    #def find_pixels_ocurrences(self):
+    #def detect_pixels_ocurrences(self):
     #    unique_values, counts = np.unique(self.screenshot_array, return_counts=True)
     #    pixels_ocurrences = dict(zip(unique_values, counts))
     #    sorted_pixels_ocurrences = dict(
@@ -112,7 +112,7 @@ class Screenshot(ConvolutionKernel):
     #    )
     #    self.pixels_ocurrences = sorted_pixels_ocurrences
     
-    #def find_common_color(self):
-    #    self.find_pixels_ocurrences()
+    #def detect_common_color(self):
+    #    self.detect_pixels_ocurrences()
     #    most_common_color = next(iter(self.pixels_ocurrences.keys()))
     #    return most_common_color
