@@ -23,7 +23,7 @@ if __name__ == "__main__":
         np_screenshot = Screenshot(game.screen_capture()) # NumPy array
         processed_np_img = np_screenshot.process_img()
         #print(type(processed_np_img))
-        processed_np_img.show()
+        processed_np_img.show('Computer_Vision')
         
         key = cv.waitKey(1)
         if key == ord('q'):
@@ -35,7 +35,4 @@ if __name__ == "__main__":
         dinogui.refresh(average_fps)
         n_frames += 1
 
-
-        
-        
         #game.keep_open()  # Keep the browser open is crashing esse trem
