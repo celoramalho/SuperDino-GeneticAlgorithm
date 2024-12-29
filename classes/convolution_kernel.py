@@ -1,4 +1,4 @@
-import cv2 as cv
+"""import cv2 as cv
 import numpy as np
 #import matplotlib.pyplot as plt
 
@@ -23,4 +23,5 @@ class ConvolutionKernel:
         filtered_image = cv.filter2D(blurred_image, -1, self.kernel)
         eightbit_array = np.uint8(np.absolute(filtered_image))
         _, binary = cv.threshold(eightbit_array, 30, 255, cv.THRESH_BINARY) #Convert to Binary
-        return binary 
+        return binary
+"""
