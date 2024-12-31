@@ -13,15 +13,11 @@ t0 = time.time()
 n_frames = 1
 kernel = "Laplacian" # Laplacian, Prewitt X, Prewitt Y, Emboss, Kirsch Compass, Sobel X, Sobel Y
 
-
-
-
-
 dinogui = DinoTerminalGui(13)
 if __name__ == "__main__":
     game = DinoGameWithScreenCapture()
     game.start()
-    Screenshot.define_show_mode(mode="Computer_Vision")
+    Screenshot.define_show_mode(mode="Objects_Detecteds")
     
     while True:
         

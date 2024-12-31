@@ -73,7 +73,7 @@ class ImageProcessing():
         return eightbit_array
     
     def blur_image(self, cv_image):
-        return cv.GaussianBlur(cv_image, (3, 3), 0)
+        return cv.medianBlur(cv_image, 1)
     
     def resize_image(self, cv_image):
         return cv.resize(cv_image, None, fx=0.60, fy=0.60)
@@ -105,28 +105,30 @@ class ImageProcessing():
         
         for contour in contours:
             x, y, w, h = cv.boundingRect(contour)
+            area = w * h
             
-            object_detected = ObjectDetected(contour, "Unknown")                
-            
-            if object_detected.is_dino():
-                is_new = True
-                for existing_dino in dinos:
-                    if self.is_duplicate(existing_dino, object_detected):
-                        is_new = False
-                        break
-                if is_new:
-                    dinos.append(object_detected.dimensions())
-                    #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
-                    
-            elif object_detected.is_cactus():
-                cactus.append(object_detected.dimensions())
-                #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
-            elif object_detected.is_fcking_prehistoric_birds():
-                fcking_prehistoric_birds.append(object_detected.dimensions())
-                #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
-            else:
-                unknown.append([x, y, w, h])
-                #cv.drawContours(self.computer_img, contour, 0, (255, 255, 0), 4)
+            if area > 300: #Small contours dosent count, better performace
+                object_detected = ObjectDetected(contour, "Unknown")                
+                
+                if object_detected.is_dino():
+                    is_new = True
+                    for existing_dino in dinos:
+                        if self.is_duplicate(existing_dino, object_detected):
+                            is_new = False
+                            break
+                    if is_new:
+                        dinos.append(object_detected.dimensions())
+                        #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
+                        
+                elif object_detected.is_cactus():
+                    cactus.append(object_detected.dimensions())
+                    #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
+                elif object_detected.is_fcking_prehistoric_birds():
+                    fcking_prehistoric_birds.append(object_detected.dimensions())
+                    #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
+                else:
+                    unknown.append([x, y, w, h])
+                    #cv.drawContours(self.computer_img, contour, 0, (255, 255, 0), 4)
 
         elements["dino"] = dinos
         elements["cactus"] = cactus
