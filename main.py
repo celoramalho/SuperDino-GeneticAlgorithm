@@ -5,6 +5,7 @@ from classes.dino_terminal_gui import DinoTerminalGui
 
 import cv2 as cv
 import time
+import numpy as np
 # Usar a classe
 # Example usage
 
@@ -12,18 +13,18 @@ t0 = time.time()
 n_frames = 1
 kernel = "Laplacian" # Laplacian, Prewitt X, Prewitt Y, Emboss, Kirsch Compass, Sobel X, Sobel Y
 
-
 dinogui = DinoTerminalGui(13)
 if __name__ == "__main__":
     game = DinoGameWithScreenCapture()
-    game.open_game()
+    game.start()
+    Screenshot.define_show_mode(mode="Objects_Detecteds")
     
     while True:
         
         np_screenshot = Screenshot(game.screen_capture()) # NumPy array
         processed_np_img = np_screenshot.process_img()
         #print(type(processed_np_img))
-        processed_np_img.show('Computer_Vision')
+        processed_np_img.show()
         
         key = cv.waitKey(1)
         if key == ord('q'):

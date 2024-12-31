@@ -16,7 +16,7 @@ class DinoGameSelenium:
         driver = webdriver.Chrome(service=service, options=chrome_options)
         return driver
 
-    def open_game(self):
+    def open(self):
         try:
             self.driver.get("chrome://dino")
             print("Dino game opened successfully.")
