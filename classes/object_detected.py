@@ -82,18 +82,28 @@ class ObjectDetected:
                 return False
         
     def is_cactus(self): #bidimensional (2D)
-        if 20 < self.w < 60 and 20 < self.h < 60 and 0.5 < self.aspect_ratio < 1.5:
-            self.label = "cactus"
-            return False
-        else:
-            return False
+        cactus_contour = ObjectDetected.reference_contours["cactus"]
+        similarity = cv.matchShapes(cactus_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
+        
+        if self.area >= self.min_area:
+            if similarity < 2:
+                #print(f"similarity: {similarity}, position: {self.x}, {self.y}")
+                self.label = "cactus"
+                return True
+            else:
+                return False
     
     def is_fcking_prehistoric_birds(self): #bidimensional (2D)
-        if 20 < self.w < 60 and 20 < self.h < 60 and 0.5 < self.aspect_ratio < 1.5:
-            self.label = "fcking_prehistoric_birds"
-            return False
-        else:
-            return False
+        prehistoric_bird_contour = ObjectDetected.reference_contours["cactus"]
+        similarity = cv.matchShapes(prehistoric_bird_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
+        
+        if self.area >= self.min_area:
+            if similarity < 0.15:
+                #print(f"similarity: {similarity}, position: {self.x}, {self.y}")
+                self.label = "pterodactyl"
+                return True
+            else:
+                return False
     
     def show_reference_contours():
         images = {}

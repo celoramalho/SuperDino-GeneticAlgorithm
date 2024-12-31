@@ -146,7 +146,7 @@ class ImageProcessing():
         
     def locate_game_region(self):
         computer_vision_image = self.computer_vision_image(self.cv_image, resize=False)
-        croped_image = self.cv_image
+        #croped_image = self.cv_image
         browser_bar = None
         image_height, image_width = computer_vision_image.shape
         
@@ -178,11 +178,11 @@ class ImageProcessing():
                 game_width = x_end - x_start
                 
                 
-                cv.rectangle(croped_image, (object_detected.x, object_detected.y), (object_detected.x+object_detected.w, object_detected.y+object_detected.h), (255, 0, 0), 2)
-                croped_image = croped_image[y_start:y_end, x_start:x_end]
-                cv.imshow("Game Region", croped_image)
-                cv.waitKey(0)
-                cv.destroyAllWindows()
+                #cv.rectangle(croped_image, (object_detected.x, object_detected.y), (object_detected.x+object_detected.w, object_detected.y+object_detected.h), (255, 0, 0), 2)
+                #croped_image = croped_image[y_start:y_end, x_start:x_end]
+                #cv.imshow("Game Region", croped_image)
+                #cv.waitKey(0)
+                #cv.destroyAllWindows()
                 
                 return game_x, game_y, game_height, game_width
             
