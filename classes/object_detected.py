@@ -75,7 +75,7 @@ class ObjectDetected:
         
         if self.area >= self.min_area:
             if similarity < 0.15:
-                print(f"similarity: {similarity}, position: {self.x}, {self.y}")
+                #print(f"similarity: {similarity}, position: {self.x}, {self.y}")
                 self.label = "dino"
                 return True
             else:

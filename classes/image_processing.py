@@ -19,15 +19,21 @@ class ImageProcessing():
         self.cv_image = image
         self.kernel = self.kernels['Laplacian']
 
-    def process(self):
+    def process(self, screen_show_mode = "Objects_Detecteds"):
         computer_vision_img = self.computer_vision_image(self.cv_image, resize=True)
-        
         elements = self.detect_elements(computer_vision_img)
 
-        original_image = self.resize_image(self.cv_image)
-        objects_detecteds_image = self.draw_detected_objects(original_image, elements)
-        #print(type(objects_detecteds_image))
-        return original_image, objects_detecteds_image, computer_vision_img
+        match screen_show_mode:
+            case "Computer_Vision":
+                image_to_show = computer_vision_img
+            case "Original":
+                original_image = self.resize_image(self.cv_image)
+                image_to_show = original_image
+            case "Objects_Detecteds":
+                original_image = self.resize_image(self.cv_image)
+                image_to_show = self.draw_detected_objects(original_image, elements)
+        
+        return image_to_show
     
     def draw_detected_objects(self, img, elements):
         img = self.draw_and_log_elements(img, elements["dino"], "Dino", (0, 255, 0))  # Green

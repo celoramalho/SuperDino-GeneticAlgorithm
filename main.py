@@ -21,12 +21,14 @@ dinogui = DinoTerminalGui(13)
 if __name__ == "__main__":
     game = DinoGameWithScreenCapture()
     game.start()
+    Screenshot.define_show_mode(mode="Computer_Vision")
+    
     while True:
         
         np_screenshot = Screenshot(game.screen_capture()) # NumPy array
         processed_np_img = np_screenshot.process_img()
         #print(type(processed_np_img))
-        processed_np_img.show(mode = 'Objects_Detecteds')
+        processed_np_img.show()
         
         key = cv.waitKey(1)
         if key == ord('q'):

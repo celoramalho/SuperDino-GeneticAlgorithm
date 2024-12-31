@@ -3,27 +3,25 @@ import cv2 as cv
 from classes.image_processing import ImageProcessing
 
 class Screenshot(ImageProcessing):
-    def __init__(self, image, objects_detecteds_img=None, computer_vision_img=None):
+    
+    screen_show_mode = "Objects_Detecteds"
+    
+    @classmethod
+    def define_show_mode(cls, mode="Objects_Detecteds"):
+        modes_available = ["Computer_Vision", "Original", "Objects_Detecteds"]
+        if mode in modes_available:
+            cls.screen_show_mode = mode
+        else:
+            raise ValueError(f"Invalid show mode: {mode}. Available modes: {modes_available}")
+    
+    def __init__(self, image):
         self.image = image
-        self.objects_detecteds_img = objects_detecteds_img
-        self.computer_vision_img = computer_vision_img
         super().__init__(image)
     
     def process_img(self):
-        img_processed, objects_detecteds_img, computer_vision_img = self.process()
-        return Screenshot(img_processed, objects_detecteds_img, computer_vision_img)
+        image_processed = self.process(Screenshot.screen_show_mode)
+        return Screenshot(image_processed)
         
-    def show(self, mode="Original"):
-        
-        match mode:
-            case "Computer_Vision":
-                img_to_show = self.computer_vision_img
-            case "Original":
-                img_to_show = self.image
-            case "Objects_Detecteds":
-                img_to_show = self.objects_detecteds_img
-            case _:
-                img_to_show = self.objects_detecteds_img
-            
-        resized_image = cv.resize(img_to_show, (0, 0), fx=0.5, fy=0.5)
-        cv.imshow("Computer Vision", resized_image)
+    def show(self):
+        resized_image = cv.resize(self.image, (0, 0), fx=0.5, fy=0.5)
+        cv.imshow(Screenshot.screen_show_mode, resized_image)

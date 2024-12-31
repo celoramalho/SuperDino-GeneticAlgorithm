@@ -13,7 +13,7 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
         ObjectDetected.initialize_reference_contours()
         #ObjectDetected.show_reference_contours()
         self.chrome_region = self.get_chrome_window_region()
-        self.game_region = self.find_game_region()
+        #self.game_region = self.find_game_region()
         
     
     def get_chrome_window_region(self):
