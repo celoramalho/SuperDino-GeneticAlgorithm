@@ -15,20 +15,19 @@ class ImageProcessing():
         "Prewitt Y": np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]),
     }
 
-    def __init__(self, image, reference_images):
+    def __init__(self, image):
         self.cv_image = image
         self.kernel = self.kernels['Laplacian']
-        self.reference_images = reference_images
 
     def process(self):
-        computer_vision_img = self.computer_vision_image(self.cv_image, resize=False)
+        computer_vision_img = self.computer_vision_image(self.cv_image, resize=True)
         
         elements = self.detect_elements(computer_vision_img)
 
-        original_image = self.cv_image#self.resize_image(self.cv_image)
+        original_image = self.resize_image(self.cv_image)
         objects_detecteds_image = self.draw_detected_objects(original_image, elements)
         #print(type(objects_detecteds_image))
-        return self.reference_images, original_image, objects_detecteds_image, computer_vision_img
+        return original_image, objects_detecteds_image, computer_vision_img
     
     def draw_detected_objects(self, img, elements):
         img = self.draw_and_log_elements(img, elements["dino"], "Dino", (0, 255, 0))  # Green
@@ -101,7 +100,7 @@ class ImageProcessing():
         for contour in contours:
             x, y, w, h = cv.boundingRect(contour)
             
-            object_detected = ObjectDetected(contour, "Unknown", self.reference_images)                
+            object_detected = ObjectDetected(contour, "Unknown")                
             
             if object_detected.is_dino():
                 is_new = True
@@ -145,7 +144,7 @@ class ImageProcessing():
         
         contours, hierarchy = self.find_contours(computer_vision_image)
         for contour in contours:
-            object_detected = ObjectDetected(contour, "Unknown", self.reference_images)
+            object_detected = ObjectDetected(contour, "Unknown")
             
             if object_detected.is_dino():
                 if browser_bar is not None:
@@ -169,6 +168,6 @@ class ImageProcessing():
                 return croped_image
             
             elif object_detected.lenght() >= image_width * 0.90:
-                browser_bar = ObjectDetected(contour, "BrowserBar", self.reference_images)
+                browser_bar = ObjectDetected(contour, "BrowserBar")
         
         return croped_image
