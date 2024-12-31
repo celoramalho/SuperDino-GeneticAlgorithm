@@ -15,19 +15,20 @@ class ImageProcessing():
         "Prewitt Y": np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]),
     }
 
-    def __init__(self, image):
+    def __init__(self, image, reference_images):
         self.cv_image = image
         self.kernel = self.kernels['Laplacian']
+        self.reference_images = reference_images
 
     def process(self):
-        computer_vision_img = self.computer_vision_image(self.cv_image)
+        computer_vision_img = self.computer_vision_image(self.cv_image, resize=False)
         
         elements = self.detect_elements(computer_vision_img)
 
-        original_image = self.resize_image(self.cv_image)
+        original_image = self.cv_image#self.resize_image(self.cv_image)
         objects_detecteds_image = self.draw_detected_objects(original_image, elements)
         #print(type(objects_detecteds_image))
-        return original_image, objects_detecteds_image, computer_vision_img
+        return self.reference_images, original_image, objects_detecteds_image, computer_vision_img
     
     def draw_detected_objects(self, img, elements):
         img = self.draw_and_log_elements(img, elements["dino"], "Dino", (0, 255, 0))  # Green
@@ -54,7 +55,7 @@ class ImageProcessing():
             for element in elements:
                 x, y, w, h = element
                 cv.putText(img, label, (x, y - 10), font, font_scale, color, thickness)
-                print(f"{label} found at: x={x}, y={y}, width={w}, height={h}")
+                #print(f"{label} found at: x={x}, y={y}, width={w}, height={h}")
                 cv.rectangle(img, (x, y), (x+w, y+h), color, 2)
         return img
         
@@ -88,7 +89,6 @@ class ImageProcessing():
     
     def detect_elements(self, image):
         
-        
         contours, hierarchy = self.find_contours(image)
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None,"unknown": None}
 
@@ -98,13 +98,10 @@ class ImageProcessing():
         unknown = []
         #print(f"Shape in detect_elements method: {cv_image.shape}")
         
-        
         for contour in contours:
             x, y, w, h = cv.boundingRect(contour)
             
-            object_detected = ObjectDetected(x, y, w, h, "Unknown")
-            
-                
+            object_detected = ObjectDetected(contour, "Unknown", self.reference_images)                
             
             if object_detected.is_dino():
                 is_new = True
@@ -141,37 +138,37 @@ class ImageProcessing():
             return False        
         
     def game_region(self):
-        computer_vision_image = self.computer_vision_image(self.cv_image, resize=False)
-        croped_image = self.cv_image
+        computer_vision_image = self.computer_vision_image(self.cv_image, resize=True)
+        croped_image = self.resize_image(self.cv_image)
         browser_bar = None
         image_height, image_width = computer_vision_image.shape
         
         contours, hierarchy = self.find_contours(computer_vision_image)
         for contour in contours:
-            x, y, w, h = cv.boundingRect(contour)
-            object_detected = ObjectDetected(x, y, w, h, "Unknown")
-            object_length = max(w, h)  # The longer side of the bounding box
+            object_detected = ObjectDetected(contour, "Unknown", self.reference_images)
             
-            
-            if object_length >= image_width * 0.90:
-                browser_bar = ObjectDetected(x, y, w, h, "BrowserBar")
-            
-            elif  object_detected.is_dino():
-                print(f"Image Height: {image_height}")
-                print(f"Image Width: {image_width}")
-                print(f"Object Detected Height: {object_detected.height()}")
-                print(f"Object Detected Width: {object_detected.width()}")
-                print(f"browser_bardetected Y: {browser_bar.y}")
-                print(f"Dino Detected Y: {y}")
+            if object_detected.is_dino():
                 if browser_bar is not None:
                     min_y = browser_bar.y
                 else:
-                    min_y = y - object_detected.height() * 2
+                    min_y = object_detected.y - object_detected.height() * 2
                     
                 max_y = object_detected.y + object_detected.height()*2
-                y_start = max(0, min_y)  # Extend upwards
-                y_end = min(image_height, max_y)  # Extend downwards
-                croped_image = self.cv_image[y_start:y_end, :]
+                y_start = max(0, min_y) # Extend upwards
+                y_end = min(image_height, max_y) # Extend downwards
+                
+                min_x = object_detected.x - object_detected.width()
+                max_x = object_detected.x + object_detected.width() * 14
+                
+                x_start = max(0, min_x) # Extend to the left
+                x_end = min(image_width, max_x)  # Extend to the right
+                
+                cv.rectangle(croped_image, (object_detected.x, object_detected.y), (object_detected.x+object_detected.w, object_detected.y+object_detected.h), (255, 0, 0), 2)
+            
+                croped_image = croped_image[y_start:y_end, x_start:x_end]
                 return croped_image
+            
+            elif object_detected.lenght() >= image_width * 0.90:
+                browser_bar = ObjectDetected(contour, "BrowserBar", self.reference_images)
         
         return croped_image

@@ -3,15 +3,15 @@ import cv2 as cv
 from classes.image_processing import ImageProcessing
 
 class Screenshot(ImageProcessing):
-    def __init__(self, image, objects_detecteds_img=None, computer_vision_img=None):
+    def __init__(self, image, reference_images, objects_detecteds_img=None, computer_vision_img=None):
         self.image = image
         self.objects_detecteds_img = objects_detecteds_img
         self.computer_vision_img = computer_vision_img
-        super().__init__(image)
+        super().__init__(image, reference_images)
     
     def process_img(self):
-        img_processed, objects_detecteds_img, computer_vision_img = self.process()
-        return Screenshot(img_processed, objects_detecteds_img, computer_vision_img)
+        reference_images, img_processed, objects_detecteds_img, computer_vision_img = self.process()
+        return Screenshot(img_processed, reference_images, objects_detecteds_img, computer_vision_img)
         
     def show(self, mode="Original"):
         

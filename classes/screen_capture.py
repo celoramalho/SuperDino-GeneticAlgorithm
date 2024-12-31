@@ -20,9 +20,9 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
             screenshot = sct.grab(region)
             return np.array(screenshot) # Convert to NumPy array
 
-    def screen_capture(self):
+    def screen_capture(self, reference_images):
         chrome_region = self.get_chrome_window_region() # Define this here inside the loop? Se a pessoa mudar a dimensão da janela
         np_img = self.capture_chrome_window(chrome_region)
-        chrome_screenshot = Screenshot(np_img)
+        chrome_screenshot = Screenshot(np_img, reference_images)
         game_region_screenshot = chrome_screenshot.game_region()
-        return game_region_screenshot
+        return game_region_screenshot 
