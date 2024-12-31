@@ -13,7 +13,8 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
         ObjectDetected.initialize_reference_contours()
         #ObjectDetected.show_reference_contours()
         self.chrome_region = self.get_chrome_window_region()
-        #self.game_region = self.find_game_region()
+        print(f"Chrome Region: {self.chrome_region}")
+        self.game_region = self.find_game_region()
         
     
     def get_chrome_window_region(self):
@@ -25,17 +26,30 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
             "height": rect["height"]
         }                
     
-    def capture_chrome_window(self, region):
+    def capture_window(self, region):
         with mss.mss() as sct:
             screenshot = sct.grab(region)
             return np.array(screenshot) # Convert to NumPy array
 
     def find_game_region(self):
-        np_img = self.capture_chrome_window(self.chrome_region)
+        np_img = self.capture_window(self.chrome_region)
         chrome_screenshot = Screenshot(np_img)
-        game_region_screenshot = chrome_screenshot.game_region()
+        game_x, game_y, game_height, game_width = chrome_screenshot.locate_game_region()        
+
+        return {
+            "top": game_y + self.chrome_region["top"],
+            "left": game_x + self.chrome_region["left"],
+            "width": game_width,
+            "height": game_height
+        }
         
     def screen_capture(self):
-        chrome_region = self.get_chrome_window_region() 
-        np_img = self.capture_chrome_window(chrome_region)
+        new_region = self.get_chrome_window_region()
+        if self.chrome_region != new_region:
+            print("Chrome Region changed.")
+            self.chrome_region = new_region
+            self.game_region = self.find_game_region()
+            print(f"Game Region: {self.game_region}")
+            
+        np_img = self.capture_window(self.game_region if self.game_region else self.chrome_region)
         return np_img 
