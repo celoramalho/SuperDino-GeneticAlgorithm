@@ -13,7 +13,7 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
         ObjectDetected.initialize_reference_contours()
         #ObjectDetected.show_reference_contours()
         self.chrome_region = self.get_chrome_window_region()
-        print(f"Chrome Region: {self.chrome_region}")
+        #print(f"Chrome Region: {self.chrome_region}")
         self.game_region = self.find_game_region()
         
     
@@ -38,7 +38,7 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
         if game_region is None:
             return False
         else:
-            print(f"Game Region found???: {game_region}")
+            #print(f"Game Region found???: {game_region}")
             game_x, game_y, game_height, game_width = game_region        
 
             return {
@@ -51,12 +51,12 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
     def screen_capture(self):
         new_region = self.get_chrome_window_region()
         if self.chrome_region != new_region:
-            print("Chrome Region changed.")
+            #print("Chrome Region changed.")
             self.chrome_region = new_region
             self.game_region = self.find_game_region()
-            print(f"Game Region: {self.game_region}")
+            #print(f"Game Region: {self.game_region}")
         
         region = self.game_region if self.game_region else self.chrome_region
-        print(f"Region: {region}")
+        #print(f"Region: {region}")
         np_img = self.capture_window(region)
         return np_img 

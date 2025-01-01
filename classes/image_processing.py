@@ -129,8 +129,8 @@ class ImageProcessing():
                 
                 elif object_detected.is_cactus():
                     cactus.append(object_detected.dimensions())
-                    print("Cactus found!")
-                    print(object_detected.is_dino())
+                    #print("Cactus found!")
+                    #print(object_detected.is_dino())
                     #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
                     
                 else:
