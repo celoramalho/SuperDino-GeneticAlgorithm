@@ -107,7 +107,7 @@ class ImageProcessing():
             x, y, w, h = cv.boundingRect(contour)
             area = w * h
             
-            if area > 300: #Small contours dosent count, better performace
+            if area > 300 and w < 1500: #Small contours dosent count, better performace
                 object_detected = ObjectDetected(contour, "Unknown")                
                 
                 if object_detected.is_dino():
@@ -118,14 +118,21 @@ class ImageProcessing():
                             break
                     if is_new:
                         dinos.append(object_detected.dimensions())
+                        break
+                    else:
+                        break
                         #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
                         
-                elif object_detected.is_cactus():
-                    cactus.append(object_detected.dimensions())
-                    #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
                 elif object_detected.is_fcking_prehistoric_birds():
                     fcking_prehistoric_birds.append(object_detected.dimensions())
+                    #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)   
+                
+                elif object_detected.is_cactus():
+                    cactus.append(object_detected.dimensions())
+                    print("Cactus found!")
+                    print(object_detected.is_dino())
                     #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
+                    
                 else:
                     unknown.append([x, y, w, h])
                     #cv.drawContours(self.computer_img, contour, 0, (255, 255, 0), 4)
@@ -161,7 +168,7 @@ class ImageProcessing():
                 else:
                     min_y = object_detected.y - object_detected.height() * 2
                     
-                max_y = object_detected.y + object_detected.height()*2
+                max_y = object_detected.y + object_detected.height() * 2
                 
                 y_start = max(0, min_y) # Extend upwards
                 y_end = min(image_height, max_y) # Extend downwards
@@ -184,7 +191,7 @@ class ImageProcessing():
                 #cv.waitKey(0)
                 #cv.destroyAllWindows()
                 
-                return game_x, game_y, game_height, game_width
+                return (game_x, game_y, game_height, game_width)
             
             elif object_detected.lenght() >= image_width * 0.90:
                 browser_bar = ObjectDetected(contour, "BrowserBar")

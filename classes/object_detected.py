@@ -8,6 +8,7 @@ class ObjectDetected:
     reference_contours = {}
     reference_images = {
         "dino_up": os.path.join(PARENT_DIR, "img", "dino_up.png"),
+        "dino_down": os.path.join(PARENT_DIR, "img", "dino_down.png"),
         "cactus": os.path.join(PARENT_DIR, "img", "cactus-1.png"),
         "fcking_prehistoric_birds": os.path.join(PARENT_DIR, "img", "prehistoric_bird.png")
     }
@@ -70,11 +71,14 @@ class ObjectDetected:
     
     def is_dino(self): #bidimensional (2D)
         dino_standup_contour = ObjectDetected.reference_contours["dino_up"]
+        dino_down_contour = ObjectDetected.reference_contours["dino_down"]
         dino_aprox = cv.approxPolyDP(dino_standup_contour, 0.01 * cv.arcLength(dino_standup_contour, True), True)
-        similarity = cv.matchShapes(dino_standup_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
+        similarity_up = cv.matchShapes(dino_standup_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
+        similarity_down = cv.matchShapes(dino_down_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
+        similarity = min(similarity_up, similarity_down)
         
         if self.area >= self.min_area:
-            if similarity < 0.15:
+            if similarity_up < 0.15:
                 #print(f"similarity: {similarity}, position: {self.x}, {self.y}")
                 self.label = "dino"
                 return True
@@ -83,10 +87,10 @@ class ObjectDetected:
         
     def is_cactus(self): #bidimensional (2D)
         cactus_contour = ObjectDetected.reference_contours["cactus"]
-        similarity = cv.matchShapes(cactus_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
+        #similarity = cv.matchShapes(cactus_contour, self.contour, cv.CONTOURS_MATCH_I1, 0)
         
         if self.area >= self.min_area:
-            if similarity < 2:
+            if 20 < self.w < 60 and 20 < self.h < 60 and 0.5 < self.aspect_ratio < 1.5:
                 #print(f"similarity: {similarity}, position: {self.x}, {self.y}")
                 self.label = "cactus"
                 return True

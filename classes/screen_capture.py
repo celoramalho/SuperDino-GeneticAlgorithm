@@ -34,14 +34,19 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
     def find_game_region(self):
         np_img = self.capture_window(self.chrome_region)
         chrome_screenshot = Screenshot(np_img)
-        game_x, game_y, game_height, game_width = chrome_screenshot.locate_game_region()        
+        game_region = chrome_screenshot.locate_game_region()
+        if game_region is None:
+            return False
+        else:
+            print(f"Game Region found???: {game_region}")
+            game_x, game_y, game_height, game_width = game_region        
 
-        return {
-            "top": game_y + self.chrome_region["top"],
-            "left": game_x + self.chrome_region["left"],
-            "width": game_width,
-            "height": game_height
-        }
+            return {
+                "top": game_y + self.chrome_region["top"],
+                "left": game_x + self.chrome_region["left"],
+                "width": game_width,
+                "height": game_height
+            }
         
     def screen_capture(self):
         new_region = self.get_chrome_window_region()
@@ -50,6 +55,8 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
             self.chrome_region = new_region
             self.game_region = self.find_game_region()
             print(f"Game Region: {self.game_region}")
-            
-        np_img = self.capture_window(self.game_region if self.game_region else self.chrome_region)
+        
+        region = self.game_region if self.game_region else self.chrome_region
+        print(f"Region: {region}")
+        np_img = self.capture_window(region)
         return np_img 
