@@ -73,13 +73,13 @@ class ImageProcessing():
         return eightbit_array
     
     def blur_image(self, cv_image):
-        return cv.medianBlur(cv_image, 1)
+        return cv.GaussianBlur(cv_image, (3, 3), 0) #cv.medianBlur(cv_image, 1)
     
     def resize_image(self, cv_image):
-        return cv.resize(cv_image, None, fx=0.60, fy=0.60)
+        return cv.resize(cv_image, None, fx=0.70, fy=0.70)
     
     def threshold_image(self, cv_image):
-        binary =  cv.adaptiveThreshold(cv_image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2) #Convert to Binary
+        _, binary =  cv.threshold(cv_image, 10, 255, cv.THRESH_BINARY) #cv.adaptiveThreshold(cv_image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2) #Convert to Binary
         return binary
     
     def convert_to_gray(self, cv_image):
@@ -161,14 +161,13 @@ class ImageProcessing():
         
         for contour in contours:
             object_detected = ObjectDetected(contour, "Unknown")
-            
             if object_detected.is_dino():
                 if browser_bar is not None:
                     min_y = browser_bar.y
                 else:
                     min_y = object_detected.y - object_detected.height() * 2
                     
-                max_y = object_detected.y + object_detected.height() * 2
+                max_y = object_detected.y + round(object_detected.height() * 0.8)
                 
                 y_start = max(0, min_y) # Extend upwards
                 y_end = min(image_height, max_y) # Extend downwards
@@ -190,10 +189,9 @@ class ImageProcessing():
                 #cv.imshow("Game Region", croped_image)
                 #cv.waitKey(0)
                 #cv.destroyAllWindows()
-                
                 return (game_x, game_y, game_height, game_width)
             
-            elif object_detected.lenght() >= image_width * 0.90:
+            elif object_detected.lenght() >= round(image_width * 0.95):
                 browser_bar = ObjectDetected(contour, "BrowserBar")
-        
+        wait = input("Press enter to continue...")
         return None
