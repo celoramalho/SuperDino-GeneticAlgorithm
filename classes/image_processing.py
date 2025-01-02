@@ -107,7 +107,7 @@ class ImageProcessing():
             x, y, w, h = cv.boundingRect(contour)
             area = w * h
             
-            if area > 300: #Small contours dosent count, better performace
+            if area > 300 and w < 1500: #Small contours dosent count, better performace
                 object_detected = ObjectDetected(contour, "Unknown")                
                 
                 if object_detected.is_dino():
@@ -118,14 +118,21 @@ class ImageProcessing():
                             break
                     if is_new:
                         dinos.append(object_detected.dimensions())
+                        break
+                    else:
+                        break
                         #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
                         
-                elif object_detected.is_cactus():
-                    cactus.append(object_detected.dimensions())
-                    #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
                 elif object_detected.is_fcking_prehistoric_birds():
                     fcking_prehistoric_birds.append(object_detected.dimensions())
+                    #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)   
+                
+                elif object_detected.is_cactus():
+                    cactus.append(object_detected.dimensions())
+                    #print("Cactus found!")
+                    #print(object_detected.is_dino())
                     #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)
+                    
                 else:
                     unknown.append([x, y, w, h])
                     #cv.drawContours(self.computer_img, contour, 0, (255, 255, 0), 4)
@@ -144,13 +151,14 @@ class ImageProcessing():
         else:
             return False        
         
-    def game_region(self):
-        computer_vision_image = self.computer_vision_image(self.cv_image, resize=True)
-        croped_image = self.resize_image(self.cv_image)
+    def locate_game_region(self):
+        computer_vision_image = self.computer_vision_image(self.cv_image, resize=False)
+        #croped_image = self.cv_image
         browser_bar = None
         image_height, image_width = computer_vision_image.shape
         
         contours, hierarchy = self.find_contours(computer_vision_image)
+        
         for contour in contours:
             object_detected = ObjectDetected(contour, "Unknown")
             
@@ -160,7 +168,8 @@ class ImageProcessing():
                 else:
                     min_y = object_detected.y - object_detected.height() * 2
                     
-                max_y = object_detected.y + object_detected.height()*2
+                max_y = object_detected.y + object_detected.height() * 2
+                
                 y_start = max(0, min_y) # Extend upwards
                 y_end = min(image_height, max_y) # Extend downwards
                 
@@ -170,12 +179,21 @@ class ImageProcessing():
                 x_start = max(0, min_x) # Extend to the left
                 x_end = min(image_width, max_x)  # Extend to the right
                 
-                cv.rectangle(croped_image, (object_detected.x, object_detected.y), (object_detected.x+object_detected.w, object_detected.y+object_detected.h), (255, 0, 0), 2)
-            
-                croped_image = croped_image[y_start:y_end, x_start:x_end]
-                return croped_image
+                game_x = x_start
+                game_y = y_start
+                game_height = y_end - y_start
+                game_width = x_end - x_start
+                
+                
+                #cv.rectangle(croped_image, (object_detected.x, object_detected.y), (object_detected.x+object_detected.w, object_detected.y+object_detected.h), (255, 0, 0), 2)
+                #croped_image = croped_image[y_start:y_end, x_start:x_end]
+                #cv.imshow("Game Region", croped_image)
+                #cv.waitKey(0)
+                #cv.destroyAllWindows()
+                
+                return (game_x, game_y, game_height, game_width)
             
             elif object_detected.lenght() >= image_width * 0.90:
                 browser_bar = ObjectDetected(contour, "BrowserBar")
         
-        return croped_image
+        return None
