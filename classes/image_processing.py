@@ -39,6 +39,7 @@ class ImageProcessing():
         img = self.draw_and_log_elements(img, elements["dino"], "Dino", (0, 255, 0))  # Green
         img = self.draw_and_log_elements(img, elements["cactus"], "Cactus", (0, 0, 255))  # Red
         img = self.draw_and_log_elements(img, elements["fcking_prehistoric_birds"], "Fcking Prehistoric Birds", (0, 0, 192))
+        img = self.draw_and_log_elements(img, elements["unknown"], "Unknown", (255, 255, 255))
         return img# Dark Red
     
     def computer_vision_image(self, cv_image, resize=True):
@@ -97,9 +98,11 @@ class ImageProcessing():
         
         contours, hierarchy = self.find_contours(image)
         elements = {"dino": None, "cactus": None, "fcking_prehistoric_birds": None,"unknown": None}
-
+        
+        best_dino_contour = None
+        best_dino_similarity = 999
         cactus = []
-        dinos = []
+        best_dino_contour = []
         fcking_prehistoric_birds = []
         unknown = []
         #print(f"Shape in detect_elements method: {cv_image.shape}")
@@ -112,18 +115,13 @@ class ImageProcessing():
             if area > 300 and w < 1500: #Small contours dosent count, better performace
                 object_detected = ObjectDetected(contour, "Unknown")                
                 
-                if object_detected.is_object("dino"):
-                    is_new = True
-                    for existing_dino in dinos:
-                        if self.is_duplicate(existing_dino, object_detected):
-                            is_new = False
-                            break
-                    if is_new:
-                        dinos.append(object_detected.dimensions())
-                        break
-                    else:
-                        break
-                        #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
+                
+                dino_similarity = object_detected.is_object("dino")
+                if dino_similarity:
+                    if dino_similarity < best_dino_similarity:
+                        best_dino_similarity = dino_similarity
+                        best_dino_contour = [(object_detected.dimensions())]
+                            #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
                         
                 elif object_detected.is_object("fcking_prehistoric_bird"):
                     fcking_prehistoric_birds.append(object_detected.dimensions())
@@ -139,7 +137,7 @@ class ImageProcessing():
                     unknown.append([x, y, w, h])
                     #cv.drawContours(self.computer_img, contour, 0, (255, 255, 0), 4)
 
-        elements["dino"] = dinos
+        elements["dino"] = best_dino_contour
         elements["cactus"] = cactus
         elements["fcking_prehistoric_birds"] = fcking_prehistoric_birds
         elements["unknown"] = unknown
@@ -175,7 +173,7 @@ class ImageProcessing():
                 y_end = min(image_height,  dino_end_y) # Extend downwards
                 
                 dino_start_x = object_detected.x - object_detected.w
-                dino_end_x = object_detected.x + object_detected.w * 14
+                dino_end_x = object_detected.x + object_detected.w * 15
                 
                 x_start = max(0,  dino_start_x) # Extend to the left
                 x_end = min(image_width, dino_end_x)  # Extend to the right
