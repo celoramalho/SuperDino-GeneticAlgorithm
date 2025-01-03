@@ -57,6 +57,6 @@ class DinoGameWithScreenCapture(DinoGameSelenium):
             #print(f"Game Region: {self.game_region}")
         
         region = self.game_region if self.game_region else self.chrome_region
-        #print(f"Region: {region}")
+        print(f"Region: {region}")
         np_img = self.capture_window(region)
         return np_img 

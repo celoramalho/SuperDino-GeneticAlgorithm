@@ -76,7 +76,8 @@ class ImageProcessing():
         return cv.GaussianBlur(cv_image, (3, 3), 0) #cv.medianBlur(cv_image, 1)
     
     def resize_image(self, cv_image):
-        return cv.resize(cv_image, None, fx=0.70, fy=0.70)
+        large_image = cv.resize(cv_image, None, fx=2, fy=2)
+        return large_image
     
     def threshold_image(self, cv_image):
         _, binary =  cv.threshold(cv_image, 10, 255, cv.THRESH_BINARY) #cv.adaptiveThreshold(cv_image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2) #Convert to Binary
@@ -104,13 +105,14 @@ class ImageProcessing():
         #print(f"Shape in detect_elements method: {cv_image.shape}")
         
         for contour in contours:
+            #contour = cv.approxPolyDP(contour, 0.01 * cv.arcLength(contour, True), True)
             x, y, w, h = cv.boundingRect(contour)
             area = w * h
             
             if area > 300 and w < 1500: #Small contours dosent count, better performace
                 object_detected = ObjectDetected(contour, "Unknown")                
                 
-                if object_detected.is_dino():
+                if object_detected.is_object("dino"):
                     is_new = True
                     for existing_dino in dinos:
                         if self.is_duplicate(existing_dino, object_detected):
@@ -123,11 +125,11 @@ class ImageProcessing():
                         break
                         #cv.drawContours(self.computer_img, contour, 0, (0, 255, 0), 4)
                         
-                elif object_detected.is_fcking_prehistoric_birds():
+                elif object_detected.is_object("fcking_prehistoric_bird"):
                     fcking_prehistoric_birds.append(object_detected.dimensions())
                     #cv.drawContours(self.computer_img, contour, 0, (255, 0, 0), 4)   
                 
-                elif object_detected.is_cactus():
+                elif object_detected.is_object("cactus"):
                     cactus.append(object_detected.dimensions())
                     #print("Cactus found!")
                     #print(object_detected.is_dino())
@@ -159,39 +161,36 @@ class ImageProcessing():
         
         contours, hierarchy = self.find_contours(computer_vision_image)
         
+        
         for contour in contours:
             object_detected = ObjectDetected(contour, "Unknown")
-            if object_detected.is_dino():
-                if browser_bar is not None:
-                    min_y = browser_bar.y
-                else:
-                    min_y = object_detected.y - object_detected.height() * 2
-                    
-                max_y = object_detected.y + round(object_detected.height() * 0.8)
+            if object_detected.is_object("dino"): #ver qual objeto mais proximo do dino
+               #if browser_bar is not None:
+                #    min_y = browser_bar.y
                 
-                y_start = max(0, min_y) # Extend upwards
-                y_end = min(image_height, max_y) # Extend downwards
+                dino_start_y = object_detected.y - round(object_detected.height() * 2.5)
+                dino_end_y = object_detected.y + round(object_detected.height() * 1.2)
                 
-                min_x = object_detected.x - object_detected.width()
-                max_x = object_detected.x + object_detected.width() * 14
+                y_start = max(0,dino_start_y) # Extend upwards
+                y_end = min(image_height,  dino_end_y) # Extend downwards
                 
-                x_start = max(0, min_x) # Extend to the left
-                x_end = min(image_width, max_x)  # Extend to the right
+                dino_start_x = object_detected.x - object_detected.w
+                dino_end_x = object_detected.x + object_detected.w * 14
                 
-                game_x = x_start
-                game_y = y_start
+                x_start = max(0,  dino_start_x) # Extend to the left
+                x_end = min(image_width, dino_end_x)  # Extend to the right
+                
                 game_height = y_end - y_start
                 game_width = x_end - x_start
-                
                 
                 #cv.rectangle(croped_image, (object_detected.x, object_detected.y), (object_detected.x+object_detected.w, object_detected.y+object_detected.h), (255, 0, 0), 2)
                 #croped_image = croped_image[y_start:y_end, x_start:x_end]
                 #cv.imshow("Game Region", croped_image)
                 #cv.waitKey(0)
                 #cv.destroyAllWindows()
-                return (game_x, game_y, game_height, game_width)
+                print(f"Game Region: game x:{x_start}, game y:{y_start}, game width:{game_width}, game height:{game_height}, x end:{x_end}, x_start:{x_start}")
+                return (x_start, y_start, game_height, game_width)
             
-            elif object_detected.lenght() >= round(image_width * 0.95):
-                browser_bar = ObjectDetected(contour, "BrowserBar")
-        wait = input("Press enter to continue...")
+            #elif object_detected.lenght() >= round(image_width * 0.95):
+            #    browser_bar = ObjectDetected(contour, "BrowserBar")
         return None
