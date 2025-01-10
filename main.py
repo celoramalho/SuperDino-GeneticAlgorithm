@@ -17,7 +17,7 @@ dinogui = DinoTerminalGui(13)
 if __name__ == "__main__":
     game = DinoGameWithScreenCapture()
     game.start()
-    Screenshot.define_show_mode(mode="Objects_Detecteds")
+    Screenshot.define_show_mode(mode="Objects_Detecteds") # Computer_Vision
     
     while True:
         
